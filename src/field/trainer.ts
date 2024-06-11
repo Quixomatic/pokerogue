@@ -122,6 +122,14 @@ export default class Trainer extends Phaser.GameObjects.Container {
     // Determine the title to include based on the configuration and includeTitle flag.
     let title = includeTitle && this.config.title ? this.config.title : null;
 
+    if (this.name === "" && name.toLowerCase().includes("grunt")) {
+      // This is a evil team grunt so we localize it by only using the "name" as the title
+      title = i18next.t(`trainerClasses:${name.toLowerCase().replace(/\s/g, "_")}`);
+      console.log("Localized grunt name: " + title);
+      // Since grunts are not named we can just return the title
+      return title;
+    }
+
     // If the trainer has a name (not null or undefined).
     if (this.name) {
       // If the title should be included.
@@ -426,7 +434,7 @@ export default class Trainer extends Phaser.GameObjects.Container {
     const party = this.scene.getEnemyParty();
     const nonFaintedPartyMembers = party.slice(this.scene.currentBattle.getBattlerCount()).filter(p => !p.isFainted()).filter(p => !trainerSlot || p.trainerSlot === trainerSlot);
     const partyMemberScores = nonFaintedPartyMembers.map(p => {
-      const playerField = this.scene.getPlayerField().filter(p => p.isActive(true));
+      const playerField = this.scene.getPlayerField();
       let score = 0;
       for (const playerPokemon of playerField) {
         score += p.getMatchupScore(playerPokemon);
